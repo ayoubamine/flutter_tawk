@@ -5,11 +5,21 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import 'tawk_visitor.dart';
 
+/// [Tawk] Widget.
 class Tawk extends StatefulWidget {
+  /// Tawk direct chat link.
   final String directChatLink;
+
+  /// Object used to set the visitor name and email.
   final TawkVisitor visitor;
+
+  /// Called right after the widget is rendered.
   final Function() onLoad;
+
+  /// Called when a link pressed.
   final Function(String url) onLinkTap;
+
+  /// Render your own loading widget.
   final Widget placeholder;
 
   Tawk({

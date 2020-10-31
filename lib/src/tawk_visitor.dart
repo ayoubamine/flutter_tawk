@@ -1,6 +1,12 @@
+/// Use [TawkVisitor] to set the visitor name and email.
 class TawkVisitor {
+  /// Visitor's name.
   final String name;
+
+  /// Visitor's email.
   final String email;
+
+  /// [Secure mode](https://developer.tawk.to/jsapi/#SecureMode).
   final String hash;
 
   TawkVisitor({
