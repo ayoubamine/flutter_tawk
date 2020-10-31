@@ -8,9 +8,9 @@
 
 ## 🚀 Showcase
 
-<img src="./readme_resources/screenshot1.png" width="200" />
-<img src="./readme_resources/screenshot2.png" width="200" />
-<img src="./readme_resources/screenshot3.png" width="200" />
+<img src="https://raw.githubusercontent.com/ayoubamine/flutter_tawk/main/readme_resources/screenshot1.png" width="200" />
+<img src="https://raw.githubusercontent.com/ayoubamine/flutter_tawk/main/readme_resources/screenshot2.png" width="200" />
+<img src="https://raw.githubusercontent.com/ayoubamine/flutter_tawk/main/readme_resources/screenshot3.png" width="200" />
 
 ## Install
 
