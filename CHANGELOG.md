@@ -1,3 +1,7 @@
+## [0.0.4]
+
+- Fix the visitor auto fill issue.
+
 ## [0.0.3]
 
 - Improve docs.
