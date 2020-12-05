@@ -40,7 +40,12 @@ class _TawkState extends State<Tawk> {
 
   void _setUser(TawkVisitor visitor) {
     final json = jsonEncode(visitor);
-    final javascriptString = 'Tawk_API.setAttributes($json);';
+    final javascriptString = '''
+      Tawk_API = Tawk_API || {};
+      Tawk_API.onLoad = function() {
+        Tawk_API.setAttributes($json);
+      };
+    ''';
 
     _controller.evaluateJavascript(javascriptString);
   }
