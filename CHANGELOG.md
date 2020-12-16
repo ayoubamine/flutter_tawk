@@ -1,3 +1,11 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [0.0.5]
+
+- Fix stuck at loading on iOS.
+
 ## [0.0.4]
 
 - Fix the visitor auto fill issue.
