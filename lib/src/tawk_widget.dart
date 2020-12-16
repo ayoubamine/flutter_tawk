@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -40,12 +41,21 @@ class _TawkState extends State<Tawk> {
 
   void _setUser(TawkVisitor visitor) {
     final json = jsonEncode(visitor);
-    final javascriptString = '''
-      Tawk_API = Tawk_API || {};
-      Tawk_API.onLoad = function() {
+    String javascriptString;
+
+    if (Platform.isIOS) {
+      javascriptString = '''
+        Tawk_API = Tawk_API || {};
         Tawk_API.setAttributes($json);
-      };
-    ''';
+      ''';
+    } else {
+      javascriptString = '''
+        Tawk_API = Tawk_API || {};
+        Tawk_API.onLoad = function() {
+          Tawk_API.setAttributes($json);
+        };
+      ''';
+    }
 
     _controller.evaluateJavascript(javascriptString);
   }
@@ -63,18 +73,26 @@ class _TawkState extends State<Tawk> {
             });
           },
           navigationDelegate: (NavigationRequest request) {
+            if (request.url == 'about:blank' ||
+                request.url.contains('tawk.to')) {
+              return NavigationDecision.navigate;
+            }
+
             if (widget.onLinkTap != null) {
               widget.onLinkTap(request.url);
             }
+
             return NavigationDecision.prevent;
           },
           onPageFinished: (_) {
             if (widget.visitor != null) {
               _setUser(widget.visitor);
             }
+
             if (widget.onLoad != null) {
               widget.onLoad();
             }
+
             setState(() {
               _isLoading = false;
             });
