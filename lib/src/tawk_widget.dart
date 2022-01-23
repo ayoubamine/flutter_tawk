@@ -12,19 +12,19 @@ class Tawk extends StatefulWidget {
   final String directChatLink;
 
   /// Object used to set the visitor name and email.
-  final TawkVisitor visitor;
+  final TawkVisitor? visitor;
 
   /// Called right after the widget is rendered.
-  final Function() onLoad;
+  final Function()? onLoad;
 
   /// Called when a link pressed.
-  final Function(String url) onLinkTap;
+  final Function(String url)? onLinkTap;
 
   /// Render your own loading widget.
-  final Widget placeholder;
+  final Widget? placeholder;
 
   Tawk({
-    @required this.directChatLink,
+    required this.directChatLink,
     this.visitor,
     this.onLoad,
     this.onLinkTap,
@@ -36,10 +36,10 @@ class Tawk extends StatefulWidget {
 }
 
 class _TawkState extends State<Tawk> {
-  WebViewController _controller;
+  late WebViewController _controller;
   bool _isLoading = true;
 
-  void _setUser(TawkVisitor visitor) {
+  void _setUser(TawkVisitor? visitor) {
     final json = jsonEncode(visitor);
     String javascriptString;
 
@@ -79,7 +79,7 @@ class _TawkState extends State<Tawk> {
             }
 
             if (widget.onLinkTap != null) {
-              widget.onLinkTap(request.url);
+              widget.onLinkTap!(request.url);
             }
 
             return NavigationDecision.prevent;
@@ -90,7 +90,7 @@ class _TawkState extends State<Tawk> {
             }
 
             if (widget.onLoad != null) {
-              widget.onLoad();
+              widget.onLoad!();
             }
 
             setState(() {
