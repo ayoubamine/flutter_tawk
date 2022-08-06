@@ -1,5 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_tawk/flutter_tawk.dart';
 
 void main() => runApp(const MyApp());
@@ -23,10 +23,14 @@ class MyApp extends StatelessWidget {
             email: 'ayoubamine2a@gmail.com',
           ),
           onLoad: () {
-            print('Hello Tawk!');
+            if (kDebugMode) {
+              print('Hello Tawk!');
+            }
           },
           onLinkTap: (String url) {
-            print(url);
+            if (kDebugMode) {
+              print(url);
+            }
           },
           placeholder: const Center(
             child: Text('Loading...'),
