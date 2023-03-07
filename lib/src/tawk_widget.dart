@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -58,33 +58,21 @@ class _TawkState extends State<Tawk> {
       ''';
     }
 
-    _controller.runJavascript(javascriptString);
+    _controller.runJavaScript(javascriptString);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        WebView(
-          initialUrl: widget.directChatLink,
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            setState(() {
-              _controller = webViewController;
-            });
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(widget.directChatLink))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            // Update loading bar.
           },
-          navigationDelegate: (NavigationRequest request) {
-            if (request.url == 'about:blank' ||
-                request.url.contains('tawk.to')) {
-              return NavigationDecision.navigate;
-            }
-
-            if (widget.onLinkTap != null) {
-              widget.onLinkTap!(request.url);
-            }
-
-            return NavigationDecision.prevent;
-          },
+          onPageStarted: (String url) {},
           onPageFinished: (_) {
             if (widget.visitor != null) {
               _setUser(widget.visitor!);
@@ -98,6 +86,28 @@ class _TawkState extends State<Tawk> {
               _isLoading = false;
             });
           },
+          onWebResourceError: (WebResourceError error) {},
+          onNavigationRequest: (NavigationRequest request) {
+            if (request.url == 'about:blank' || request.url.contains('tawk.to')) {
+              return NavigationDecision.navigate;
+            }
+
+            if (widget.onLinkTap != null) {
+              widget.onLinkTap!(request.url);
+            }
+
+            return NavigationDecision.prevent;
+          },
+        ),
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        WebViewWidget(
+          controller: _controller,
         ),
         _isLoading
             ? widget.placeholder ??
