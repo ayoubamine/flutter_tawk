@@ -1,6 +1,6 @@
-import 'dart:io';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -40,40 +40,13 @@ class _TawkState extends State<Tawk> {
   late WebViewController _controller;
   bool _isLoading = true;
 
-  void _setUser(TawkVisitor visitor) {
-    final json = jsonEncode(visitor);
-    String javascriptString;
-
-    if (Platform.isIOS) {
-      javascriptString = '''
-        Tawk_API = Tawk_API || {};
-        Tawk_API.setAttributes($json);
-      ''';
-    } else {
-      javascriptString = '''
-        Tawk_API = Tawk_API || {};
-        Tawk_API.onLoad = function() {
-          Tawk_API.setAttributes($json);
-        };
-      ''';
-    }
-
-    _controller.runJavascript(javascriptString);
-  }
-
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        WebView(
-          initialUrl: widget.directChatLink,
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            setState(() {
-              _controller = webViewController;
-            });
-          },
-          navigationDelegate: (NavigationRequest request) {
+  void initState() {
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) {
             if (request.url == 'about:blank' ||
                 request.url.contains('tawk.to')) {
               return NavigationDecision.navigate;
@@ -99,12 +72,47 @@ class _TawkState extends State<Tawk> {
             });
           },
         ),
-        _isLoading
-            ? widget.placeholder ??
-                const Center(
-                  child: CircularProgressIndicator(),
-                )
-            : Container(),
+      )
+      ..loadRequest(Uri.parse(widget.directChatLink));
+    super.initState();
+  }
+
+  void _setUser(TawkVisitor visitor) {
+    final json = jsonEncode(visitor);
+    String? javascriptString;
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.iOS:
+        javascriptString = '''
+          Tawk_API = Tawk_API || {};
+          Tawk_API.setAttributes($json);
+        ''';
+        break;
+      case TargetPlatform.android:
+        javascriptString = '''
+          Tawk_API = Tawk_API || {};
+          Tawk_API.onLoad = function() {
+            Tawk_API.setAttributes($json);
+          };
+        ''';
+        break;
+      default:
+        javascriptString = null;
+    }
+
+    if (javascriptString == null) return;
+
+    _controller.runJavaScript(javascriptString);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        WebViewWidget(controller: _controller),
+        if (_isLoading)
+          widget.placeholder ??
+              const Center(child: CircularProgressIndicator()),
       ],
     );
   }
