@@ -60,7 +60,9 @@ class _TawkState extends State<Tawk> {
           },
           onPageFinished: (String url) {
             if (Theme.of(context).brightness == Brightness.dark) {
-              _controller.runJavaScript(darkMode);
+              try {
+                _controller.runJavaScript(darkMode);
+              } catch (e) {}
               // '''document.head.appendChild(document.createElement("style")).innerHTML=`$css`''');
             }
             setState(() {
@@ -109,7 +111,9 @@ class _TawkState extends State<Tawk> {
       ''';
     }
 
-    _controller.runJavaScript(javascriptString);
+    try {
+      _controller.runJavaScript(javascriptString);
+    } catch (e) {}
   }
 
   @override
