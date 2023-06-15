@@ -53,12 +53,19 @@ class _TawkState extends State<Tawk> {
           onProgress: (int progress) {
             // Update loading bar.
           },
-          onPageStarted: (String url) {},
+          onPageStarted: (String url) {
+            setState(() {
+              _isLoading = true;
+            });
+          },
           onPageFinished: (String url) {
             if (Theme.of(context).brightness == Brightness.dark) {
               _controller.runJavaScript(darkMode);
               // '''document.head.appendChild(document.createElement("style")).innerHTML=`$css`''');
             }
+            setState(() {
+              _isLoading = false;
+            });
             if (widget.visitor != null) {
               _setUser(widget.visitor!);
             }
@@ -115,7 +122,11 @@ class _TawkState extends State<Tawk> {
         _isLoading
             ? widget.placeholder ??
                 const Center(
-                  child: CircularProgressIndicator(),
+                  child: SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 4,
+                      )),
                 )
             : Container(),
       ],
