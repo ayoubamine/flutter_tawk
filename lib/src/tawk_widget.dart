@@ -36,6 +36,9 @@ class Tawk extends StatefulWidget {
   _TawkState createState() => _TawkState();
 }
 
+const darkMode =
+    'document.head.appendChild(document.createElement("style")).innerHTML="html { filter: invert(.95) hue-rotate(180deg) }"';
+
 class _TawkState extends State<Tawk> {
   late WebViewController _controller;
   bool _isLoading = true;
@@ -44,7 +47,7 @@ class _TawkState extends State<Tawk> {
   void initState() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
+      // ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
@@ -52,23 +55,27 @@ class _TawkState extends State<Tawk> {
           },
           onPageStarted: (String url) {},
           onPageFinished: (String url) {
-             if (widget.visitor != null) {
-                _setUser(widget.visitor!);
-              }
+            if (Theme.of(context).brightness == Brightness.dark) {
+              _controller.runJavaScript(darkMode);
+              // '''document.head.appendChild(document.createElement("style")).innerHTML=`$css`''');
+            }
+            if (widget.visitor != null) {
+              _setUser(widget.visitor!);
+            }
 
-              if (widget.onLoad != null) {
-                widget.onLoad!();
-              }
+            if (widget.onLoad != null) {
+              widget.onLoad!();
+            }
           },
           onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest request) {
-              if (request.url == 'about:blank' ||
-                  request.url.contains('tawk.to')) {
-                return NavigationDecision.navigate;
-              }
-                if (widget.onLinkTap != null) {
-                widget.onLinkTap!(request.url);
-              }
+            if (request.url == 'about:blank' ||
+                request.url.contains('tawk.to')) {
+              return NavigationDecision.navigate;
+            }
+            if (widget.onLinkTap != null) {
+              widget.onLinkTap!(request.url);
+            }
             return NavigationDecision.prevent;
           },
         ),
@@ -103,9 +110,7 @@ class _TawkState extends State<Tawk> {
     return Stack(
       children: [
         WebViewWidget(
-          controller: _controller,  
-            
-          
+          controller: _controller,
         ),
         _isLoading
             ? widget.placeholder ??
@@ -117,5 +122,3 @@ class _TawkState extends State<Tawk> {
     );
   }
 }
-
- 
