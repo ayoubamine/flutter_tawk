@@ -20,6 +20,9 @@ class Tawk extends StatefulWidget {
   /// Called when a link pressed.
   final Function(String)? onLinkTap;
 
+  /// Called for cleaning the cache
+  final bool clearCache;
+
   /// Render your own loading widget.
   final Widget? placeholder;
 
@@ -28,6 +31,7 @@ class Tawk extends StatefulWidget {
     required this.directChatLink,
     this.visitor,
     this.onLoad,
+    this.clearCache = false,
     this.onLinkTap,
     this.placeholder,
   }) : super(key: key);
@@ -69,6 +73,12 @@ class _TawkState extends State<Tawk> {
           initialUrl: widget.directChatLink,
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
+            if (widget.clearCache) {
+              webViewController.clearCache();
+              final cookieManager = CookieManager();
+              cookieManager.clearCookies();
+            }
+
             setState(() {
               _controller = webViewController;
             });
