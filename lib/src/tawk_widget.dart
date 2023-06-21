@@ -75,6 +75,8 @@ class _TawkState extends State<Tawk> {
           onWebViewCreated: (WebViewController webViewController) {
             if (widget.clearCache) {
               webViewController.clearCache();
+              final cookieManager = CookieManager();
+              cookieManager.clearCookies();
             }
 
             setState(() {
