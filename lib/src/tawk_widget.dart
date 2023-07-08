@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -33,11 +33,12 @@ class Tawk extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TawkState createState() => _TawkState();
+  @override
+  State<Tawk> createState() => _TawkState();
 }
 
 class _TawkState extends State<Tawk> {
-  late WebViewController _controller;
+  late final WebViewController _controller;
   bool _isLoading = true;
 
   void _setUser(TawkVisitor visitor) {
@@ -58,22 +59,17 @@ class _TawkState extends State<Tawk> {
       ''';
     }
 
-    _controller.runJavascript(javascriptString);
+    _controller.runJavaScript(javascriptString);
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        WebView(
-          initialUrl: widget.directChatLink,
-          javascriptMode: JavascriptMode.unrestricted,
-          onWebViewCreated: (WebViewController webViewController) {
-            setState(() {
-              _controller = webViewController;
-            });
-          },
-          navigationDelegate: (NavigationRequest request) {
+  void initState() {
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(widget.directChatLink))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) {
             if (request.url == 'about:blank' ||
                 request.url.contains('tawk.to')) {
               return NavigationDecision.navigate;
@@ -98,6 +94,18 @@ class _TawkState extends State<Tawk> {
               _isLoading = false;
             });
           },
+        ),
+      );
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        WebViewWidget(
+          controller: _controller,
         ),
         _isLoading
             ? widget.placeholder ??
