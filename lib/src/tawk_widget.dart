@@ -58,8 +58,11 @@ class _TawkState extends State<Tawk> {
         };
       ''';
     }
-
-    _controller.runJavaScript(javascriptString);
+    try {
+      _controller.runJavaScript(javascriptString);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   @override
@@ -110,7 +113,7 @@ class _TawkState extends State<Tawk> {
         _isLoading
             ? widget.placeholder ??
                 const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator.adaptive(),
                 )
             : Container(),
       ],
