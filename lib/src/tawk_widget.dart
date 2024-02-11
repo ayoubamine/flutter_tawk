@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tawk/src/tawk_events_js.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import 'tawk_visitor.dart';
@@ -23,14 +24,54 @@ class Tawk extends StatefulWidget {
   /// Render your own loading widget.
   final Widget? placeholder;
 
-  const Tawk({
-    Key? key,
-    required this.directChatLink,
-    this.visitor,
-    this.onLoad,
-    this.onLinkTap,
-    this.placeholder,
-  }) : super(key: key);
+  /// onAgentJoinChat
+  final ValueChanged? onAgentJoinChat;
+
+  /// onChatMessageAgent
+  final ValueChanged? onChatMessageAgent;
+
+  /// onChatMessageVisitor
+  final ValueChanged? onChatMessageVisitor;
+
+  /// onPrechatSubmit
+  final ValueChanged? onPrechatSubmit;
+
+  /// onOfflineSubmit
+  final ValueChanged? onOfflineSubmit;
+
+  /// onChatMessageSystem
+  final ValueChanged? onChatMessageSystem;
+
+  /// onAgentLeaveChat
+  final ValueChanged? onAgentLeaveChat;
+
+  /// onChatSatisfaction
+  final ValueChanged? onChatSatisfaction;
+
+  /// onVisitorNameChanged
+  final ValueChanged? onVisitorNameChanged;
+
+  /// onFileUpload
+  final ValueChanged? onFileUpload;
+
+  const Tawk(
+      {Key? key,
+      required this.directChatLink,
+      this.visitor,
+      this.onLoad,
+      this.onLinkTap,
+      this.placeholder,
+      this.onAgentJoinChat,
+      this.onAgentLeaveChat,
+      this.onChatMessageAgent,
+      this.onChatMessageSystem,
+      this.onChatMessageVisitor,
+      this.onChatSatisfaction,
+      this.onFileUpload,
+      this.onOfflineSubmit,
+      this.onPrechatSubmit,
+      this.onVisitorNameChanged})
+      : super(key: key);
 
   @override
   _TawkState createState() => _TawkState();
@@ -68,6 +109,78 @@ class _TawkState extends State<Tawk> {
         WebView(
           initialUrl: widget.directChatLink,
           javascriptMode: JavascriptMode.unrestricted,
+          javascriptChannels: {
+            JavascriptChannel(
+                name: "onAgentJoinChat",
+                onMessageReceived: (e) {
+                  if (widget.onAgentJoinChat != null) {
+                    widget.onAgentJoinChat!(jsonDecode(e.message));
+                  }
+                }),
+            JavascriptChannel(
+                name: "onChatMessageAgent",
+                onMessageReceived: (e) {
+                  if (widget.onChatMessageAgent != null) {
+                    widget.onChatMessageAgent!(jsonDecode(e.message));
+                  }
+                }),
+            JavascriptChannel(
+                name: "onChatMessageVisitor",
+                onMessageReceived: (e) {
+                  if (widget.onChatMessageVisitor != null) {
+                    widget.onChatMessageVisitor!(jsonDecode(e.message));
+                  }
+                }),
+            JavascriptChannel(
+                name: "onPrechatSubmit",
+                onMessageReceived: (e) {
+                  if (widget.onPrechatSubmit != null) {
+                    widget.onPrechatSubmit!(jsonDecode(e.message));
+                  }
+                }),
+            JavascriptChannel(
+                name: "onOfflineSubmit",
+                onMessageReceived: (e) {
+                  if (widget.onOfflineSubmit != null) {
+                    widget.onOfflineSubmit!(jsonDecode(e.message));
+                  }
+                }),
+            JavascriptChannel(
+                name: "onChatMessageSystem",
+                onMessageReceived: (e) {
+                  if (widget.onChatMessageSystem != null) {
+                    widget.onChatMessageSystem!(jsonDecode(e.message));
+                  }
+                }),
+            JavascriptChannel(
+                name: "onAgentLeaveChat",
+                onMessageReceived: (e) {
+                  if (widget.onAgentLeaveChat != null) {
+                    widget.onAgentLeaveChat!(jsonDecode(e.message));
+                  }
+                }),
+            JavascriptChannel(
+                name: "onChatSatisfaction",
+                onMessageReceived: (e) {
+                  if (widget.onChatSatisfaction != null) {
+                    widget.onChatSatisfaction!(jsonDecode(e.message));
+                  }
+                }),
+            JavascriptChannel(
+                name: "onVisitorNameChanged",
+                onMessageReceived: (e) {
+                  if (widget.onVisitorNameChanged != null) {
+                    widget.onVisitorNameChanged!(jsonDecode(e.message));
+                  }
+                }),
+            JavascriptChannel(
+                name: "onFileUpload",
+                onMessageReceived: (e) {
+                  if (widget.onFileUpload != null) {
+                    widget.onFileUpload!(jsonDecode(e.message));
+                  }
+                })
+          },
           onWebViewCreated: (WebViewController webViewController) {
             setState(() {
               _controller = webViewController;
@@ -92,6 +205,10 @@ class _TawkState extends State<Tawk> {
 
             if (widget.onLoad != null) {
               widget.onLoad!();
+            }
+
+            for (var event in TawkEventsJs.allJS) {
+              _controller.runJavascript(event);
             }
 
             setState(() {
