@@ -24,13 +24,13 @@ class Tawk extends StatefulWidget {
   final Widget? placeholder;
 
   const Tawk({
-    Key? key,
+    super.key,
     required this.directChatLink,
     this.visitor,
     this.onLoad,
     this.onLinkTap,
     this.placeholder,
-  }) : super(key: key);
+  });
 
   @override
   @override
@@ -41,7 +41,7 @@ class _TawkState extends State<Tawk> {
   late final WebViewController _controller;
   bool _isLoading = true;
 
-  void _setUser(TawkVisitor visitor) {
+  void _setUser(TawkVisitor visitor) async {
     final json = jsonEncode(visitor);
     String javascriptString;
 
@@ -59,7 +59,7 @@ class _TawkState extends State<Tawk> {
       ''';
     }
     try {
-      _controller.runJavaScript(javascriptString);
+      await _controller.runJavaScript(javascriptString);
     } catch (e) {
       debugPrint(e.toString());
     }
