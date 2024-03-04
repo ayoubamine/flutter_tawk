@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -67,40 +68,49 @@ class _TawkState extends State<Tawk> {
 
   @override
   void initState() {
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(widget.directChatLink))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onNavigationRequest: (NavigationRequest request) {
-            if (request.url == 'about:blank' ||
-                request.url.contains('tawk.to')) {
-              return NavigationDecision.navigate;
-            }
-
-            if (widget.onLinkTap != null) {
-              widget.onLinkTap!(request.url);
-            }
-
-            return NavigationDecision.prevent;
-          },
-          onPageFinished: (_) {
-            if (widget.visitor != null) {
-              _setUser(widget.visitor!);
-            }
-
-            if (widget.onLoad != null) {
-              widget.onLoad!();
-            }
-
-            setState(() {
-              _isLoading = false;
-            });
-          },
-        ),
-      );
+    _controller = WebViewController();
+    callFunction();
     // TODO: implement initState
     super.initState();
+  }
+
+  Future<void> callFunction() async {
+    try {
+      _controller
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..loadRequest(Uri.parse(widget.directChatLink))
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onNavigationRequest: (NavigationRequest request) {
+              if (request.url == 'about:blank' ||
+                  request.url.contains('tawk.to')) {
+                return NavigationDecision.navigate;
+              }
+
+              if (widget.onLinkTap != null) {
+                widget.onLinkTap!(request.url);
+              }
+
+              return NavigationDecision.prevent;
+            },
+            onPageFinished: (_) {
+              if (widget.visitor != null) {
+                _setUser(widget.visitor!);
+              }
+
+              if (widget.onLoad != null) {
+                widget.onLoad!();
+              }
+
+              setState(() {
+                _isLoading = false;
+              });
+            },
+          ),
+        );
+    } catch (e) {
+      log("call function issue $e");
+    }
   }
 
   @override
