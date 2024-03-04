@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_tawk/flutter_tawk.dart';
 
 void main() => runApp(const MyApp());
